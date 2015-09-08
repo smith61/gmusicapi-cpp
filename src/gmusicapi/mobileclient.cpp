@@ -49,10 +49,6 @@ vector< Song > MobileClient::get_all_songs( ) {
 	json::value val = ListTracksCall( this->oauthToken ).make_call( this->sjClient );
 	val = val.at( U( "data" ) ).at( U( "items" ) );
 
-	ofstream out( "C:/Users/Jacob/Desktop/out.json" );
-	val.serialize( out );
-	out.close( );
-
 	if( val.is_array( ) ) {
 		json::array songs = val.as_array( );
 		for( auto song : songs ) {
