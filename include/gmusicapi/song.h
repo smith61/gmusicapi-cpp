@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef _SONG_H_
+#define _SONG_H_
 
 #include "gmusicapi/types.h"
 
@@ -27,3 +29,5 @@ namespace gmusicapi {
 	};
 
 }
+
+#endif

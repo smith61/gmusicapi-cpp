@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef _TYPES_H_
+#define _TYPES_H_
 
 #include "cpprest/details/basic_types.h"
 
@@ -17,3 +19,5 @@ namespace gmusicapi {
 	using utility::string_t;
 
 }
+
+#endif

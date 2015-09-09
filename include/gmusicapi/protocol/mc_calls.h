@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef _MC_CALLS_H_
+#define _MC_CALLS_H_
 
 #include "gmusicapi/protocol/call.hpp"
 #include "gmusicapi/types.h"
@@ -79,3 +81,5 @@ namespace gmusicapi {
 
 	}
 }
+
+#endif

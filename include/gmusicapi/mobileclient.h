@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef _MOBILECLIENT_H_
+#define _MOBILECLIENT_H_
 
 #include <string>
 #include <vector>
@@ -29,3 +31,5 @@ namespace gmusicapi {
 	};
 
 }
+
+#endif
