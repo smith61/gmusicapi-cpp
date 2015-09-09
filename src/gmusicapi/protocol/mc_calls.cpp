@@ -6,17 +6,16 @@ using namespace std;
 
 using namespace web;
 using namespace web::http;
-using namespace utility;
-using namespace utility::conversions;
 
+using namespace gmusicapi;
 using namespace gmusicapi::protocol;
 
-static map< string, string > parse_key_value( const http_response& res ) {
-	map< string, string > v;
+static map< string_t, string_t > parse_key_value( const http_response& res ) {
+	map< string_t, string_t > v;
 	
-	stringstream ss( res.extract_utf8string( ).get( ) );
-	string line;
-	while( getline( ss, line, '\n' ) ) {
+	stringstream_t ss( res.extract_string( ).get( ) );
+	string_t line;
+	while( getline( ss, line, ( char_t ) '\n' ) ) {
 		size_t i = line.find_first_of( '=' );
 
 		v[ line.substr( 0, i ) ] = line.substr( i + 1 );
@@ -26,8 +25,8 @@ static map< string, string > parse_key_value( const http_response& res ) {
 }
 
 
-LoginCall::LoginCall( const std::string& email, const std::string& password, const std::string& androidID ) 
-	: email( to_string_t( email ) ), password( to_string_t( password ) ), androidID( to_string_t( androidID ) ) { }
+LoginCall::LoginCall( const string_t& email, const string_t& password, const string_t& androidID ) 
+	: email( email ), password( password ), androidID( androidID ) { }
 
 method LoginCall::method( ) {
 	return methods::POST;
@@ -59,12 +58,12 @@ void LoginCall::set_body( http_request& req ) {
 	req.set_body( ss.str( ), content_type );
 }
 
-map< string, string > LoginCall::parse_response( const http_response& res ) {
+map< string_t, string_t > LoginCall::parse_response( const http_response& res ) {
 	return parse_key_value( res );
 }
 
-OAuthCall::OAuthCall( const std::string& masterToken, const std::string& androidID )
-	: masterToken( to_string_t( masterToken ) ), androidID( to_string_t( androidID ) ) { }
+OAuthCall::OAuthCall( const string_t& masterToken, const string_t& androidID )
+	: masterToken( masterToken ), androidID( androidID ) { }
 
 method OAuthCall::method( ) {
 	return methods::POST;
@@ -95,11 +94,11 @@ void OAuthCall::set_body( http_request& req ) {
 	req.set_body( ss.str( ), content_type );
 }
 
-map< string, string > OAuthCall::parse_response( const http_response& res ) {
+map< string_t, string_t > OAuthCall::parse_response( const http_response& res ) {
 	return parse_key_value( res );
 }
 
-ListTracksCall::ListTracksCall( const std::string& oauthToken )
+ListTracksCall::ListTracksCall( const string_t& oauthToken )
 	: AuthenticatedCall< ListTracksCall >( oauthToken ) { }
 
 method ListTracksCall::method( ) {

@@ -7,6 +7,8 @@
 #include "cpprest/uri.h"
 #include "cpprest/uri_builder.h"
 
+#include "gmusicapi/types.h"
+
 namespace gmusicapi {
 	namespace protocol {
 
@@ -21,7 +23,6 @@ namespace gmusicapi {
 			web::uri make_uri( ) {
 				using namespace std;
 				using namespace web;
-				using namespace utility;
 
 				CALL_TYPE* self = this->as_call_type( );
 
@@ -45,7 +46,6 @@ namespace gmusicapi {
 				using namespace std;
 				using namespace web;
 				using namespace web::http;
-				using namespace utility;
 
 				CALL_TYPE* self = this->as_call_type( );
 

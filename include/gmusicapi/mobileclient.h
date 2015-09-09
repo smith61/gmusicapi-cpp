@@ -5,7 +5,8 @@
 
 #include "cpprest/http_client.h"
 
-#include "song.h"
+#include "gmusicapi/types.h"
+#include "gmusicapi/song.h"
 
 namespace gmusicapi {
 
@@ -13,7 +14,7 @@ namespace gmusicapi {
 	private:
 
 		bool isAuthenticated;
-		std::string oauthToken;
+		string_t oauthToken;
 
 		web::http::client::http_client sjClient;
 
@@ -21,7 +22,7 @@ namespace gmusicapi {
 
 		MobileClient( );
 
-		bool login( const std::string& email, const std::string& password, const std::string& androidID );
+		bool login( const string_t& email, const string_t& password, const string_t& androidID );
 
 		std::vector< gmusicapi::Song > get_all_songs( );
 

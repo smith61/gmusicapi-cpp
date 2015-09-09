@@ -15,25 +15,25 @@ using namespace gmusicapi;
 using namespace gmusicapi::protocol;
 
 MobileClient::MobileClient( )
-	: isAuthenticated( false ), oauthToken( "" ), sjClient( U( "https://www.googleapis.com/sj/v1.11" ) ) { }
+	: isAuthenticated( false ), oauthToken( ), sjClient( U( "https://www.googleapis.com/sj/v1.11" ) ) { }
 
-bool MobileClient::login( const string& email, const string& password, const string& androidID ) {
+bool MobileClient::login( const string_t& email, const string_t& password, const string_t& androidID ) {
 	if( this->isAuthenticated ) {
 		return false;
 	}
 
 	http_client client( U( "https://android.clients.google.com/" ) );
-	map< string, string > res;
+	map< string_t, string_t > res;
 
 	res = LoginCall( email, password, androidID ).make_call( client );
-	auto itr = res.find( "Token" );
+	auto itr = res.find( U( "Token" ) );
 	if( itr == res.end( ) ) {
 		return false;
 	}
 
 	
 	res = OAuthCall( itr->second, androidID ).make_call( client );
-	itr = res.find( "Auth" );
+	itr = res.find( U( "Auth" ) );
 	if( itr == res.end( ) ) {
 		return false;
 	}

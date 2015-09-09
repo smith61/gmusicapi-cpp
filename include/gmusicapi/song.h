@@ -1,6 +1,6 @@
 #pragma once
 
-#include <string>
+#include "gmusicapi/types.h"
 
 #include "cpprest/json.h"
 
@@ -10,10 +10,10 @@ namespace gmusicapi {
 
 	class Song {
 
-		std::string album;
-		std::string title;
-		std::string genre;
-		std::string artist;
+		string_t album;
+		string_t title;
+		string_t genre;
+		string_t artist;
 
 	public:
 

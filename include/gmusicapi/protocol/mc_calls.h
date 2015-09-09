@@ -1,6 +1,7 @@
 #pragma once
 
-#include "call.hpp"
+#include "gmusicapi/protocol/call.hpp"
+#include "gmusicapi/types.h"
 
 namespace gmusicapi {
 	namespace protocol {
@@ -8,37 +9,37 @@ namespace gmusicapi {
 		class LoginCall : public Call< LoginCall > {
 		private:
 
-			const utility::string_t email;
-			const utility::string_t password;
-			const utility::string_t androidID;
+			const string_t email;
+			const string_t password;
+			const string_t androidID;
 
 		public:
 
-			LoginCall( const std::string& email, const std::string& password, const std::string& androidID );
+			LoginCall( const string_t& email, const string_t& password, const string_t& androidID );
 
 			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			void set_body( web::http::http_request& req );
-			std::map< std::string, std::string > parse_response( const web::http::http_response& res );
+			std::map< string_t, string_t > parse_response( const web::http::http_response& res );
 
 		};
 
 		class OAuthCall : public Call< OAuthCall > {
 		private:
 
-			const utility::string_t masterToken;
-			const utility::string_t androidID;
+			const string_t masterToken;
+			const string_t androidID;
 
 		public:
 
-			OAuthCall( const std::string& masterToken, const std::string& androidID );
+			OAuthCall( const string_t& masterToken, const string_t& androidID );
 
 			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			void set_body( web::http::http_request& req );
-			std::map< std::string, std::string > parse_response( const web::http::http_response& res );
+			std::map< string_t, string_t > parse_response( const web::http::http_response& res );
 		};
 
 		template< typename CALL_TYPE >
@@ -49,12 +50,10 @@ namespace gmusicapi {
 
 		public:
 
-			AuthenticatedCall( const std::string& oauthToken )
-				: oauthToken( utility::conversions::to_string_t( oauthToken ) ) { }
+			AuthenticatedCall( const string_t& oauthToken )
+				: oauthToken( oauthToken) { }
 
 			void get_headers( web::http::http_headers& headers ) {
-				using namespace utility;
-
 				static string_t header_name = U( "Authorization" );
 
 				stringstream_t ss;
@@ -68,7 +67,7 @@ namespace gmusicapi {
 		class ListTracksCall : public AuthenticatedCall< ListTracksCall > {
 		public:
 
-			ListTracksCall( const std::string& oauthToken );
+			ListTracksCall( const string_t& oauthToken );
 
 			web::http::method method( );
 			utility::string_t get_endpoint( );
