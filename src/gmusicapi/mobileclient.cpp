@@ -11,6 +11,8 @@ using namespace std;
 using namespace web;
 using namespace web::http::client;
 
+using namespace boost;
+
 using namespace gmusicapi;
 using namespace gmusicapi::protocol;
 
@@ -57,4 +59,55 @@ vector< Song > MobileClient::get_all_songs( ) {
 	}
 
 	return ret;
+}
+
+
+namespace {
+	class TrackGenerator : public Generator< Song* > {
+	private:
+
+		MobileClient& mobileClient;
+		const unsigned int page_size;
+
+		vector< Song > current_page;
+		unsigned int page_offset;
+
+	public:
+
+		TrackGenerator( MobileClient& mobileClient, unsigned int page_size )
+			: mobileClient( mobileClient ), page_size( page_size ), current_page( ), page_offset( 0 ) {
+			
+			json::value val = mobileClient.make_authed_call< ListTracksCall >( );
+			val = val[ U( "data" ) ][ U( "items" ) ];
+
+			if( val.is_array( ) ) {
+				for( auto song : val.as_array( ) ) {
+					this->current_page.push_back( Song( song ) );
+				}
+			}
+		}
+
+		virtual ~TrackGenerator( ) { }
+
+		virtual bool hasNext( ) override {
+			return this->page_offset != this->current_page.size( );
+		}
+
+		virtual Song* next( ) override {
+			return &current_page[ page_offset++ ];
+		}
+
+		virtual Generator< Song* >* clone( ) override {
+			TrackGenerator* n = new TrackGenerator( this->mobileClient, page_size );
+			n->current_page = this->current_page;
+			n->page_offset = this->page_offset;
+
+			return n;
+		}
+
+	};
+}
+
+GeneratorIterator< Song* > MobileClient::get_all_tracks( unsigned int page_size ) {
+	return GeneratorIterator< Song* >( new TrackGenerator( *this, page_size ) );
 }
