@@ -44,32 +44,10 @@ namespace gmusicapi {
 			std::map< string_t, string_t > parse_response( const web::http::http_response& res );
 		};
 
-		template< typename CALL_TYPE >
-		class AuthenticatedCall : public Call< CALL_TYPE > {
-		private:
-
-			const utility::string_t oauthToken;
-
+		class ListTracksCall : public Call< ListTracksCall > {
 		public:
 
-			AuthenticatedCall( const string_t& oauthToken )
-				: oauthToken( oauthToken) { }
-
-			void get_headers( web::http::http_headers& headers ) {
-				static string_t header_name = U( "Authorization" );
-
-				stringstream_t ss;
-				ss << "GoogleLogin auth=" << this->oauthToken;
-
-				headers.add( header_name, ss.str( ) );
-			}
-
-		};
-
-		class ListTracksCall : public AuthenticatedCall< ListTracksCall > {
-		public:
-
-			ListTracksCall( const string_t& oauthToken );
+			ListTracksCall( );
 
 			web::http::method method( );
 			utility::string_t get_endpoint( );

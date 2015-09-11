@@ -98,8 +98,7 @@ map< string_t, string_t > OAuthCall::parse_response( const http_response& res ) 
 	return parse_key_value( res );
 }
 
-ListTracksCall::ListTracksCall( const string_t& oauthToken )
-	: AuthenticatedCall< ListTracksCall >( oauthToken ) { }
+ListTracksCall::ListTracksCall( ) { }
 
 method ListTracksCall::method( ) {
 	return methods::POST;
