@@ -29,14 +29,14 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 	http_client client( U( "https://android.clients.google.com/" ) );
 	map< string_t, string_t > res;
 
-	res = LoginCall( email, password, androidID ).make_call( client );
+	res = LoginCall( email, password, androidID ).make_call( client ).get( );
 	auto itr = res.find( U( "Token" ) );
 	if( itr == res.end( ) ) {
 		return false;
 	}
 
 	
-	res = OAuthCall( itr->second, androidID ).make_call( client );
+	res = OAuthCall( itr->second, androidID ).make_call( client ).get( );
 	itr = res.find( U( "Auth" ) );
 	if( itr == res.end( ) ) {
 		return false;
@@ -60,7 +60,7 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 
 vector< Song > MobileClient::get_all_songs( ) {
 	vector< Song > ret;
-	json::value val = ListTracksCall( ).make_call( this->sjClient );
+	json::value val = ListTracksCall( ).make_call( this->sjClient ).get( );
 	val = val.at( U( "data" ) ).at( U( "items" ) );
 
 	if( val.is_array( ) ) {
@@ -89,7 +89,7 @@ namespace {
 		TrackGenerator( http_client& client, unsigned int page_size )
 			: client( client ), page_size( page_size ), current_page( ), page_offset( 0 ) {
 			
-			json::value val = ListTracksCall( ).make_call( client );
+			json::value val = ListTracksCall( ).make_call( client ).get( );
 			val = val[ U( "data" ) ][ U( "items" ) ];
 
 			if( val.is_array( ) ) {

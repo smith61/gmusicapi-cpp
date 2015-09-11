@@ -46,6 +46,7 @@ namespace gmusicapi {
 
 			decltype( auto ) make_call( web::http::client::http_client& client ) {
 				using namespace std;
+				using namespace pplx;
 				using namespace web;
 				using namespace web::http;
 
@@ -58,9 +59,9 @@ namespace gmusicapi {
 				self->get_headers( request.headers( ) );
 				self->set_body( request );
 
-				const http_response response = client.request( request ).get( );
-
-				return self->parse_response( response );
+				return client.request( request ).then( [self]( task< http_response > res ) {
+					return self->parse_response( res.get( ) );
+				} );
 			}
 
 			void get_query_params( std::map< utility::string_t, utility::string_t > query_params ) { }
