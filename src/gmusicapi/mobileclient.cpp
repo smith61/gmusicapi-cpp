@@ -60,7 +60,7 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 
 vector< Song > MobileClient::get_all_songs( ) {
 	vector< Song > ret;
-	json::value val = ListTracksCall( ).make_call( this->sjClient ).get( );
+	json::value val = ListTracksCall( 10000 ).make_call( this->sjClient ).get( );
 	val = val.at( U( "data" ) ).at( U( "items" ) );
 
 	if( val.is_array( ) ) {
@@ -75,44 +75,70 @@ vector< Song > MobileClient::get_all_songs( ) {
 
 
 namespace {
-	class TrackGenerator : public Generator< Song* > {
+	class TrackGenerator : public Generator< Song > {
 	private:
 
 		http_client& client;
 		const unsigned int page_size;
 
+		bool has_next_page;
+		string_t page_token;
 		vector< Song > current_page;
-		unsigned int page_offset;
+
+		void get_next_page( ) {
+			this->current_page.clear( );
+
+			json::value val = ListTracksCall( this->page_size, page_token ).make_call( client ).get( );
+
+			json::value nextPageToken = val[ U( "nextPageToken" ) ];
+			if( nextPageToken.is_string( ) ) {
+				this->page_token = nextPageToken.as_string( );
+			}
+			else {
+				this->has_next_page = false;
+			}
+
+			val = val[ U( "data" ) ][ U( "items" ) ];
+
+			if( val.is_array( ) ) {
+				json::array& songs = val.as_array( );
+
+				for( auto itr = songs.rbegin( ); itr != songs.rend( ); ++itr ) {
+					this->current_page.push_back( Song( *itr ) );
+				}
+			}
+		}
+
+		void check_needs_next_page( ) {
+			if( current_page.empty( ) && has_next_page ) {
+				get_next_page( );
+			}
+		}
 
 	public:
 
 		TrackGenerator( http_client& client, unsigned int page_size )
-			: client( client ), page_size( page_size ), current_page( ), page_offset( 0 ) {
-			
-			json::value val = ListTracksCall( ).make_call( client ).get( );
-			val = val[ U( "data" ) ][ U( "items" ) ];
-
-			if( val.is_array( ) ) {
-				for( auto song : val.as_array( ) ) {
-					this->current_page.push_back( Song( song ) );
-				}
-			}
+			: client( client ), page_size( page_size ), page_token( ), current_page( ) {
+			get_next_page( );
 		}
 
 		virtual ~TrackGenerator( ) { }
 
 		virtual bool hasNext( ) override {
-			return this->page_offset != this->current_page.size( );
+			return this->has_next_page || !this->current_page.empty( );
 		}
 
-		virtual Song* next( ) override {
-			return &current_page[ page_offset++ ];
+		virtual Song next( ) override {
+			this->check_needs_next_page( );
+
+			Song s = current_page[ current_page.size( ) - 1 ];
+			current_page.pop_back( );
+			return s;
 		}
 
-		virtual Generator< Song* >* clone( ) override {
+		virtual Generator< Song >* clone( ) override {
 			TrackGenerator* n = new TrackGenerator( client, page_size );
 			n->current_page = this->current_page;
-			n->page_offset = this->page_offset;
 
 			return n;
 		}
@@ -120,6 +146,6 @@ namespace {
 	};
 }
 
-GeneratorIterator< Song* > MobileClient::get_all_tracks( unsigned int page_size ) {
-	return GeneratorIterator< Song* >( new TrackGenerator( this->sjClient, page_size ) );
+GeneratorIterator< Song > MobileClient::get_all_tracks( unsigned int page_size ) {
+	return GeneratorIterator< Song >( new TrackGenerator( this->sjClient, page_size ) );
 }

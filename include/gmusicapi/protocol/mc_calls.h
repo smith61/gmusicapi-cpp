@@ -45,9 +45,14 @@ namespace gmusicapi {
 		};
 
 		class ListTracksCall : public Call< ListTracksCall > {
+		private:
+
+			size_t max_results;
+			const string_t& page_token;
+
 		public:
 
-			ListTracksCall( );
+			ListTracksCall( size_t max_results, const string_t& page_token = U( "" ) );
 
 			web::http::method method( );
 			utility::string_t get_endpoint( );

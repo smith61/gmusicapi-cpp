@@ -30,7 +30,7 @@ namespace gmusicapi {
 
 		std::vector< gmusicapi::Song > get_all_songs( );
 
-		GeneratorIterator< Song* > get_all_tracks( unsigned int page_size = 10000 );
+		GeneratorIterator< Song > get_all_tracks( unsigned int page_size = 10000 );
 
 	};
 

@@ -98,7 +98,8 @@ map< string_t, string_t > OAuthCall::parse_response( const http_response& res ) 
 	return parse_key_value( res );
 }
 
-ListTracksCall::ListTracksCall( ) { }
+ListTracksCall::ListTracksCall( size_t max_results, const string_t& page_token )
+	: max_results( max_results ), page_token( page_token ) { }
 
 method ListTracksCall::method( ) {
 	return methods::POST;
@@ -112,7 +113,10 @@ string_t ListTracksCall::get_endpoint( ) {
 void ListTracksCall::set_body( http_request& req ) {
 	json::value body = json::value::object( );
 
-	body[ U( "max-results" ) ] = json::value::number( 20000 );
+	body[ U( "max-results" ) ] = json::value::number( this->max_results );
+	if( this->page_token.size( ) != 0 ) {
+		body[ U( "start-token" ) ] = json::value::string( this->page_token );
+	}
 
 	req.set_body( body );
 }
