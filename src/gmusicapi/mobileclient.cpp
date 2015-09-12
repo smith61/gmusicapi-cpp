@@ -43,13 +43,15 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 	}
 	
 	string_t oauthToken = itr->second;
-	sjClient.add_handler( [ oauthToken ]( http_request request, std::shared_ptr< http_pipeline_stage >& handler ) {
-		static string_t header_name = U( "Authorization" );
+	sjClient.add_handler( [ androidID, oauthToken ]( http_request request, std::shared_ptr< http_pipeline_stage >& handler ) {
+		static string_t auth_header_name = U( "Authorization" );
+		static string_t dvid_header_name = U( "X-Device-ID" );
 
 		stringstream_t ss;
 		ss << "GoogleLogin auth=" << oauthToken;
 
-		request.headers( ).add( header_name, ss.str( ) );
+		request.headers( ).add( auth_header_name, ss.str( ) );
+		request.headers( ).add( dvid_header_name, androidID );
 
 		return handler->propagate( request );
 	} );
