@@ -64,7 +64,7 @@ namespace gmusicapi {
 				} );
 			}
 
-			void get_query_params( std::map< utility::string_t, utility::string_t > query_params ) { }
+			void get_query_params( std::map< string_t, string_t >& query_params ) { }
 
 			void get_headers( web::http::http_headers& headers ) { }
 

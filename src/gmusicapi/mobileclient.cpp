@@ -18,7 +18,9 @@ using namespace gmusicapi;
 using namespace gmusicapi::protocol;
 
 MobileClient::MobileClient( )
-	: isAuthenticated( false ), sjClient( U( "https://www.googleapis.com/sj/v1.11" ) ) {
+	: isAuthenticated( false ),
+	  sjClient( U( "https://www.googleapis.com/sj/v1.11" ) ),
+	  androidClient( U( "https://android.clients.google.com/" ) )  {
 }
 
 bool MobileClient::login( const string_t& email, const string_t& password, const string_t& androidID ) {
@@ -43,7 +45,8 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 	}
 	
 	string_t oauthToken = itr->second;
-	sjClient.add_handler( [ androidID, oauthToken ]( http_request request, std::shared_ptr< http_pipeline_stage >& handler ) {
+
+	auto handler = [ androidID, oauthToken ]( http_request request, std::shared_ptr< http_pipeline_stage >& handler ) {
 		static string_t auth_header_name = U( "Authorization" );
 		static string_t dvid_header_name = U( "X-Device-ID" );
 
@@ -54,7 +57,10 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 		request.headers( ).add( dvid_header_name, androidID );
 
 		return handler->propagate( request );
-	} );
+	};
+	sjClient.add_handler( handler );
+	androidClient.add_handler( handler );
+
 	this->isAuthenticated = true;
 
 	return true;
@@ -150,4 +156,8 @@ namespace {
 
 GeneratorIterator< Song > MobileClient::get_all_tracks( unsigned int page_size ) {
 	return GeneratorIterator< Song >( new TrackGenerator( this->sjClient, page_size ) );
+}
+
+vector< unsigned char > MobileClient::get_song_bytes( const string_t& song_id ) {
+	return GetSongBytesCall( song_id ).make_call( this->androidClient ).get( );
 }

@@ -1,6 +1,10 @@
 #include "gmusicapi/protocol/mc_calls.h"
+#include "gmusicapi/b64.h"
 
 #include "cpprest/json.h"
+#include "openssl/hmac.h"
+
+#include <ctime>
 
 using namespace std;
 
@@ -124,4 +128,63 @@ void ListTracksCall::set_body( http_request& req ) {
 
 json::value ListTracksCall::parse_response( const http_response& res ) {
 	return res.extract_json( ).get( );
+}
+
+GetSongBytesCall::GetSongBytesCall( const string_t& song_id )
+	: song_id( song_id ) { }
+
+method GetSongBytesCall::method( ) {
+	return methods::GET;
+}
+
+string_t GetSongBytesCall::get_endpoint( ) {
+	static const string_t endpoint = U( "music/mplay" );
+	return endpoint;
+}
+
+void GetSongBytesCall::get_query_params( map< string_t, string_t >& query_params ) {
+	static vector< unsigned char > s1 = base64_decode( U( "VzeC4H4h+T2f0VI180nVX8x+Mb5HiTtGnKgH52Otj8ZCGDz9jRWyHb6QXK0JskSiOgzQfwTY5xgLLSdUSreaLVMsVVWfxfa8Rw==" ) );
+	static vector< unsigned char > s2 = base64_decode( U( "ZAPnhUkYwQ6y5DdQxWThbvhJHN8msQ1rqJw0ggKdufQjelrKuiGGJI30aswkgCWTDyHkTGK9ynlqTkJ5L4CiGGUabGeo8M6JTQ==" ) );
+	
+	vector< unsigned char > key( s1.size( ) );
+	for( auto i1 = s1.begin( ), i2 = s2.begin( ), i3 = key.begin( ); i1 != s1.end( ); i1++, i2++, i3++ ) {
+		*i3 = *i1 ^ *i2;
+	}
+	stringstream ss;
+	ss << ( time( 0 ) * 1000 );
+	
+	string sID = utility::conversions::to_utf8string( song_id );
+	string salt = ss.str( );
+
+	unsigned char result[ 20 ];
+	unsigned int len = 20;
+
+	HMAC_CTX ctx;
+	HMAC_CTX_init( &ctx );
+
+	HMAC_Init_ex( &ctx, &key[ 0 ], key.size( ), EVP_sha1( ), NULL );
+	HMAC_Update( &ctx, ( unsigned char * ) &sID[ 0 ], sID.size( ) );
+	HMAC_Update( &ctx, ( unsigned char * ) &salt[ 0 ], salt.size( ) );
+	HMAC_Final( &ctx, result, &len );
+	HMAC_CTX_cleanup( &ctx );
+
+	string_t sig = base64_encode_urlsafe( result, len );
+	sig = sig.substr( 0, sig.size( ) - 1 );
+
+	query_params[ U( "opt" ) ] = U( "hi" );
+	query_params[ U( "net" ) ] = U( "mob" );
+	query_params[ U( "pt" ) ] = U( "e" );
+	query_params[ U( "slt" ) ] = utility::conversions::to_string_t( salt );
+	query_params[ U( "sig" ) ] = sig;
+
+	if( song_id[ 0 ] == 'T' ) {
+		query_params[ U( "mjck" ) ] = song_id;
+	}
+	else {
+		query_params[ U( "songid" ) ] = song_id;
+	}
+}
+
+vector< unsigned char > GetSongBytesCall::parse_response( const http_response& res ) {
+	return res.extract_vector( ).get( );
 }

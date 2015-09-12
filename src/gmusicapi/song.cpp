@@ -23,4 +23,5 @@ Song::Song( const json::value& value ) {
 	this->artist = get_string( value, U( "artist" ), U( "Unknown" ) );
 	this->genre = get_string( value, U( "genre" ), U( "Unknown" ) );
 	this->title = get_string( value, U( "title" ), U( "Unknown" ) );
+	this->id = get_string( value, U( "nid" ), U( "" ) );
 }

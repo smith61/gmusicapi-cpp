@@ -21,6 +21,7 @@ namespace gmusicapi {
 		bool isAuthenticated;
 
 		web::http::client::http_client sjClient;
+		web::http::client::http_client androidClient;
 
 	public:
 
@@ -31,6 +32,8 @@ namespace gmusicapi {
 		std::vector< gmusicapi::Song > get_all_songs( );
 
 		GeneratorIterator< Song > get_all_tracks( unsigned int page_size = 10000 );
+
+		std::vector< unsigned char > get_song_bytes( const string_t& song_id );
 
 	};
 

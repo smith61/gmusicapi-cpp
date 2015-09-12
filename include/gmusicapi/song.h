@@ -16,6 +16,7 @@ namespace gmusicapi {
 		string_t title;
 		string_t genre;
 		string_t artist;
+		string_t id;
 
 	public:
 
@@ -25,6 +26,7 @@ namespace gmusicapi {
 		GETTER( title );
 		GETTER( genre );
 		GETTER( artist );
+		GETTER( id );
 
 	};
 
