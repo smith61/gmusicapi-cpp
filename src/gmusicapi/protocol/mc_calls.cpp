@@ -88,8 +88,9 @@ void OAuthCall::set_body( http_request& req ) {
 	ss << "&operatorCountry=us";
 	ss << "&lang=en";
 	ss << "&sdk_version=17";
+	ss << "&client_sig=38918a453d07199354f8b19af05ec6562ced5788";
 	ss << "&androidId=" << this->androidID;
-	ss << "&Token=" << this->masterToken;
+	ss << "&EncryptedPasswd=" << this->masterToken;
 
 	req.set_body( ss.str( ), content_type );
 }
