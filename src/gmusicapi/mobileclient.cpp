@@ -73,7 +73,7 @@ vector< Song > MobileClient::get_all_songs( ) {
 
 	if( val.is_array( ) ) {
 		json::array songs = val.as_array( );
-		for( auto song : songs ) {
+		for( const auto& song : songs ) {
 			ret.push_back( Song( song ) );
 		}
 	}

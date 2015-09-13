@@ -35,7 +35,7 @@ namespace gmusicapi {
 
 				self->get_query_params( query_params );
 
-				for( auto itr : query_params ) {
+				for( const auto& itr : query_params ) {
 					builder.append_query( itr.first, itr.second );
 				}
 
