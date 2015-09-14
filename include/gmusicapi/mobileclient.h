@@ -7,13 +7,35 @@
 
 #include "cpprest/http_client.h"
 
-#include "boost/generator_iterator.hpp"
-
 #include "gmusicapi/types.h"
 #include "gmusicapi/song.h"
 #include "gmusicapi/generator.hpp"
 
 namespace gmusicapi {
+
+	class TrackGenerator {
+	private:
+
+		web::http::client::http_client& client;
+		const unsigned int page_size;
+
+		std::vector< Song > current_page;
+
+		string_t next_page_token;
+
+		void next_page( );
+
+	public:
+
+		typedef Song result_type;
+
+		TrackGenerator( web::http::client::http_client& client, unsigned int page_size );
+
+		result_type operator( )( );
+
+		bool has_next( );
+
+	};
 
 	class MobileClient {
 	private:
@@ -31,7 +53,7 @@ namespace gmusicapi {
 
 		std::vector< gmusicapi::Song > get_all_songs( );
 
-		GeneratorIterator< Song > get_all_tracks( unsigned int page_size = 10000 );
+		Generator< TrackGenerator > get_all_tracks( unsigned int page_size = 10000 );
 
 		std::vector< unsigned char > get_song_bytes( const string_t& song_id );
 

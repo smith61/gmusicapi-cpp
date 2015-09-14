@@ -18,6 +18,9 @@ static string_t get_string( const json::value& obj, const string_t& key, const s
 	return val.as_string( );
 }
 
+Song::Song( )
+	: album( U( "Unknown" ) ), artist( U( "Unknown" ) ), genre( U( "Unknown" ) ), title( U( "Unknown" ) ), id( U( "" ) ) { }
+
 Song::Song( const json::value& value ) {
 	this->album = get_string( value, U( "album" ), U( "Unknown" ) );
 	this->artist = get_string( value, U( "artist" ), U( "Unknown" ) );

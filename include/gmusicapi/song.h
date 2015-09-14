@@ -6,7 +6,7 @@
 
 #include "cpprest/json.h"
 
-#define GETTER( prop ) decltype( prop ) get_##prop( ) { return this->##prop; }
+#define GETTER( prop ) decltype( prop ) get_##prop( ) const { return this->##prop; }
 
 namespace gmusicapi {
 
@@ -20,6 +20,7 @@ namespace gmusicapi {
 
 	public:
 
+		Song( );
 		Song( const web::json::value& json );
 
 		GETTER( album );

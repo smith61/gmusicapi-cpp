@@ -2,68 +2,56 @@
 #ifndef _GENERATOR_HPP_
 #define _GENERATOR_HPP_
 
-#include "boost/optional.hpp"
+#include <memory>
+#include "boost/iterator_adaptors.hpp"
 
 namespace gmusicapi {
 
-	template< typename VALUE_TYPE >
-	class Generator {
+	// Similar to boost::generator_iterator but provides GC of generators
+	//  and has_next support
+	template< typename GENERATOR_TYPE >
+	class Generator
+		: public boost::iterator_facade<
+					Generator< GENERATOR_TYPE >,
+					typename GENERATOR_TYPE::result_type,
+					boost::single_pass_traversal_tag,
+					typename GENERATOR_TYPE::result_type const& > {
+	private:
+		std::shared_ptr< GENERATOR_TYPE > instance;
+
+		bool valid;
+		typename GENERATOR_TYPE::result_type cur_val;
+
 	public:
 
-		virtual ~Generator( ) { }
+		Generator( std::shared_ptr< GENERATOR_TYPE > instance )
+			: instance( instance ), valid( true ) {
+			( *this )++;
+		}
 
-		virtual bool hasNext( ) = 0;
-		virtual VALUE_TYPE next( ) = 0;
-
-		virtual Generator< VALUE_TYPE >* clone( ) = 0;
-
-	};
-
-	template< typename VALUE_TYPE >
-	class GeneratorIterator {
-	private:
-
-		Generator< VALUE_TYPE > * generator;
-
-		void checkNext( ) {
-			if( !( *this ) ) {
-				throw "Invalid generator state.";
+		void increment( ) {
+			if( instance->has_next( ) ) {
+				this->cur_val = ( *instance )( );
+			}
+			else {
+				this->valid = false;
 			}
 		}
 
-	public:
-
-		GeneratorIterator( Generator< VALUE_TYPE >* generator )
-			: generator( generator ) { }
-
-		GeneratorIterator( const GeneratorIterator< VALUE_TYPE >& rhs )
-			: generator( rhs.generator->clone( ) ) {
+		const typename GENERATOR_TYPE::result_type& dereference( ) const {
+			return this->cur_val;
 		}
 
-		GeneratorIterator( GeneratorIterator< VALUE_TYPE >&& rhs )
-			: generator( rhs.generator ) {
-			rhs.generator = nullptr;
+		bool equal( Generator const& y ) const {
+			return this->instance == y.instance && this->cur_val == y.cur_val;
 		}
 
-		~GeneratorIterator( ) {
-			delete generator;
+		bool has_next( ) {
+			return this->valid;
 		}
 
-		GeneratorIterator< VALUE_TYPE >& operator=( const GeneratorIterator< VALUE_TYPE >& rhs ) {
-			delete generator;
-
-			this->generator = rhs.generator->clone( );
-			return *this;
-		}
-
-		operator bool( ){
-			return this->generator->hasNext( );
-		}
-
-		VALUE_TYPE operator*( ) {
-			this->checkNext( );
-
-			return this->generator->next( );
+		operator bool( ) {
+			return this->has_next( );
 		}
 
 	};

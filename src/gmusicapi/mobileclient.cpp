@@ -82,80 +82,9 @@ vector< Song > MobileClient::get_all_songs( ) {
 }
 
 
-namespace {
-	class TrackGenerator : public Generator< Song > {
-	private:
-
-		http_client& client;
-		const unsigned int page_size;
-
-		bool has_next_page;
-		string_t page_token;
-		vector< Song > current_page;
-
-		void get_next_page( ) {
-			this->current_page.clear( );
-
-			json::value val = ListTracksCall( this->page_size, page_token ).make_call( client ).get( );
-
-			json::value nextPageToken = val[ U( "nextPageToken" ) ];
-			if( nextPageToken.is_string( ) ) {
-				this->page_token = nextPageToken.as_string( );
-			}
-			else {
-				this->has_next_page = false;
-			}
-
-			val = val[ U( "data" ) ][ U( "items" ) ];
-
-			if( val.is_array( ) ) {
-				json::array& songs = val.as_array( );
-
-				for( auto itr = songs.rbegin( ); itr != songs.rend( ); ++itr ) {
-					this->current_page.push_back( Song( *itr ) );
-				}
-			}
-		}
-
-		void check_needs_next_page( ) {
-			if( current_page.empty( ) && has_next_page ) {
-				get_next_page( );
-			}
-		}
-
-	public:
-
-		TrackGenerator( http_client& client, unsigned int page_size )
-			: client( client ), page_size( page_size ), page_token( ), current_page( ) {
-			get_next_page( );
-		}
-
-		virtual ~TrackGenerator( ) { }
-
-		virtual bool hasNext( ) override {
-			return this->has_next_page || !this->current_page.empty( );
-		}
-
-		virtual Song next( ) override {
-			this->check_needs_next_page( );
-
-			Song s = current_page[ current_page.size( ) - 1 ];
-			current_page.pop_back( );
-			return s;
-		}
-
-		virtual Generator< Song >* clone( ) override {
-			TrackGenerator* n = new TrackGenerator( client, page_size );
-			n->current_page = this->current_page;
-
-			return n;
-		}
-
-	};
-}
-
-GeneratorIterator< Song > MobileClient::get_all_tracks( unsigned int page_size ) {
-	return GeneratorIterator< Song >( new TrackGenerator( this->sjClient, page_size ) );
+Generator< TrackGenerator > MobileClient::get_all_tracks( unsigned int page_size ) {
+	shared_ptr< TrackGenerator > gen( new TrackGenerator( this->sjClient, page_size ) );
+	return Generator< TrackGenerator >( gen );
 }
 
 vector< unsigned char > MobileClient::get_song_bytes( const string_t& song_id ) {
