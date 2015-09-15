@@ -17,21 +17,39 @@ namespace gmusicapi {
 					boost::single_pass_traversal_tag,
 					typename GENERATOR_TYPE::result_type const& > {
 	private:
-		std::shared_ptr< GENERATOR_TYPE > instance;
+		GENERATOR_TYPE instance;
 
 		bool valid;
 		typename GENERATOR_TYPE::result_type cur_val;
 
 	public:
 
-		Generator( std::shared_ptr< GENERATOR_TYPE > instance )
-			: instance( instance ), valid( true ) {
+		template< typename... ARGS >
+		Generator( ARGS&&... args )
+			: instance( std::forward< ARGS >( args )... ), valid( true ) {
 			( *this )++;
 		}
 
+		Generator( const Generator& ) = delete;
+		Generator& operator=( const Generator& ) = delete;
+
+		Generator( Generator&& o )
+			: instance( std::move( o.instance ) ), valid( o.valid ), cur_val( std::move( o.cur_val ) ) {
+			o.instance = nullptr;
+			o.valid = false;
+		}
+
+		Generator& operator=( Generator&& o ) {
+			std::swap( this->instance, o.instance );
+			std::swap( this->valid, o.valid );
+			std::swap( this->cur_val, o.cur_val );
+
+			return *this;
+		}
+
 		void increment( ) {
-			if( instance->has_next( ) ) {
-				this->cur_val = ( *instance )( );
+			if( instance.has_next( ) ) {
+				this->cur_val = instance( );
 			}
 			else {
 				this->valid = false;

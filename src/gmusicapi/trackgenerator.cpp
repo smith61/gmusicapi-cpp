@@ -15,6 +15,18 @@ TrackGenerator::TrackGenerator( http_client& client, unsigned int page_size )
 	this->next_page( );
 }
 
+TrackGenerator::TrackGenerator( TrackGenerator&& o )
+	: client( move( o.client ) ), page_size( o.page_size ), current_page( move( o.current_page ) ), next_page_token( move( o.next_page_token ) ) { }
+
+TrackGenerator& TrackGenerator::operator=( TrackGenerator&& o ) {
+	swap( this->client, o.client );
+	swap( this->page_size, o.page_size );
+	swap( this->current_page, o.current_page );
+	swap( this->next_page_token, o.next_page_token );
+
+	return *this;
+}
+
 bool TrackGenerator::has_next( ) {
 	return !this->next_page_token.empty( ) || !this->current_page.empty( );
 }

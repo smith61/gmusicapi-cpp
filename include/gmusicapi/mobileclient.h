@@ -17,7 +17,7 @@ namespace gmusicapi {
 	private:
 
 		web::http::client::http_client& client;
-		const unsigned int page_size;
+		unsigned int page_size;
 
 		std::vector< Song > current_page;
 
@@ -30,6 +30,12 @@ namespace gmusicapi {
 		typedef Song result_type;
 
 		TrackGenerator( web::http::client::http_client& client, unsigned int page_size );
+
+		TrackGenerator( const TrackGenerator& ) = delete;
+		TrackGenerator& operator=( const TrackGenerator& ) = delete;
+
+		TrackGenerator( TrackGenerator&& o );
+		TrackGenerator& operator=( TrackGenerator&& o );
 
 		result_type operator( )( );
 

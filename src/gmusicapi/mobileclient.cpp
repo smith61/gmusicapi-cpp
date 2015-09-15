@@ -83,8 +83,7 @@ vector< Song > MobileClient::get_all_songs( ) {
 
 
 Generator< TrackGenerator > MobileClient::get_all_tracks( unsigned int page_size ) {
-	shared_ptr< TrackGenerator > gen( new TrackGenerator( this->sjClient, page_size ) );
-	return Generator< TrackGenerator >( gen );
+	return Generator< TrackGenerator >( this->sjClient, page_size );
 }
 
 vector< unsigned char > MobileClient::get_song_bytes( const string_t& song_id ) {
