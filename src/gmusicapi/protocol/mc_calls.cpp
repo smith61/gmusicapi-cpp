@@ -5,6 +5,7 @@
 #include "openssl/hmac.h"
 
 #include <ctime>
+#include <iostream>
 
 using namespace std;
 
@@ -143,13 +144,8 @@ string_t GetSongBytesCall::get_endpoint( ) {
 }
 
 void GetSongBytesCall::get_query_params( map< string_t, string_t >& query_params ) {
-	static vector< unsigned char > s1 = base64_decode( U( "VzeC4H4h+T2f0VI180nVX8x+Mb5HiTtGnKgH52Otj8ZCGDz9jRWyHb6QXK0JskSiOgzQfwTY5xgLLSdUSreaLVMsVVWfxfa8Rw==" ) );
-	static vector< unsigned char > s2 = base64_decode( U( "ZAPnhUkYwQ6y5DdQxWThbvhJHN8msQ1rqJw0ggKdufQjelrKuiGGJI30aswkgCWTDyHkTGK9ynlqTkJ5L4CiGGUabGeo8M6JTQ==" ) );
-	
-	vector< unsigned char > key( s1.size( ) );
-	for( auto i1 = s1.begin( ), i2 = s2.begin( ), i3 = key.begin( ); i1 != s1.end( ); i1++, i2++, i3++ ) {
-		*i3 = *i1 ^ *i2;
-	}
+	static vector< unsigned char > key = base64_decode( U( "MzRlZTc5ODMtNWVlNi00MTQ3LWFhODYtNDQzZWEwNjJhYmY3NzQ0OTNkNmEtMmExNS00M2ZlLWFhY2UtZTc4NTY2OTI3NTg1Cg==" ) );
+
 	stringstream ss;
 	ss << ( time( 0 ) * 1000 );
 	
