@@ -2,6 +2,8 @@
 #include "gmusicapi/b64.h"
 
 #include "cpprest/json.h"
+#include "cpprest/interopstream.h"
+
 #include "openssl/hmac.h"
 
 #include <ctime>
@@ -119,15 +121,15 @@ json::value ListTracksCall::parse_response( const http_response& res ) {
 	return res.extract_json( ).get( );
 }
 
-GetSongBytesCall::GetSongBytesCall( const string_t& song_id )
+GetSongStreamCall::GetSongStreamCall( const string_t& song_id )
 	: song_id( song_id ) { }
 
-string_t GetSongBytesCall::get_endpoint( ) {
+string_t GetSongStreamCall::get_endpoint( ) {
 	static const string_t endpoint = U( "music/mplay" );
 	return endpoint;
 }
 
-void GetSongBytesCall::get_query_params( map< string_t, string_t >& query_params ) {
+void GetSongStreamCall::get_query_params( map< string_t, string_t >& query_params ) {
 	static vector< unsigned char > key = base64_decode( U( "MzRlZTc5ODMtNWVlNi00MTQ3LWFhODYtNDQzZWEwNjJhYmY3NzQ0OTNkNmEtMmExNS00M2ZlLWFhY2UtZTc4NTY2OTI3NTg1Cg==" ) );
 
 	stringstream ss;
@@ -165,8 +167,8 @@ void GetSongBytesCall::get_query_params( map< string_t, string_t >& query_params
 	}
 }
 
-vector< unsigned char > GetSongBytesCall::parse_response( const http_response& res ) {
-	return res.extract_vector( ).get( );
+cibytestream GetSongStreamCall::parse_response( const http_response& res ) {
+	return res.body( );
 }
 
 string_t GetDeviceInfoCall::get_endpoint( ) {

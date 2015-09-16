@@ -42,6 +42,7 @@ namespace gmusicapi {
 		bool has_next( );
 
 	};
+	typedef Generator< TrackGenerator > TrackIterator;
 
 	class MobileClient {
 	private:
@@ -59,9 +60,11 @@ namespace gmusicapi {
 
 		std::vector< gmusicapi::Song > get_all_songs( );
 
-		Generator< TrackGenerator > get_all_tracks( unsigned int page_size = 10000 );
+		TrackIterator get_all_tracks( unsigned int page_size = 10000 );
 
-		std::vector< unsigned char > get_song_bytes( const string_t& song_id );
+		pplx::task< cibytestream > get_song_stream( const string_t& song_id );
+		pplx::task< std::vector< uint8_t > > get_song_bytes( const string_t& song_id );
+
 
 		web::json::value get_registered_devices( );
 

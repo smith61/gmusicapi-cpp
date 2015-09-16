@@ -2,7 +2,13 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
+#include <vector>
+
 #include "cpprest/details/basic_types.h"
+
+#include "cpprest/streams.h"
+#include "cpprest/astreambuf.h"
+#include "cpprest/containerstream.h"
 
 namespace gmusicapi {
 
@@ -17,6 +23,9 @@ namespace gmusicapi {
 	using utility::size64_t;
 	using utility::stringstream_t;
 	using utility::string_t;
+
+	typedef concurrency::streams::istream cibytestream;
+	typedef concurrency::streams::container_buffer< std::vector< uint8_t > > cbytebuf;
 
 }
 

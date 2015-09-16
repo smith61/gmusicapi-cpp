@@ -61,19 +61,19 @@ namespace gmusicapi {
 
 		};
 
-		class GetSongBytesCall : public GetCall< GetSongBytesCall > {
+		class GetSongStreamCall : public GetCall< GetSongStreamCall > {
 		private:
 
 			const string_t& song_id;
 
 		public:
 
-			GetSongBytesCall( const string_t& song_id );
+			GetSongStreamCall( const string_t& song_id );
 
 			utility::string_t get_endpoint( );
 
 			void get_query_params( std::map< string_t, string_t >& query_params );
-			std::vector< unsigned char > parse_response( const web::http::http_response& res );
+			cibytestream parse_response( const web::http::http_response& res );
 
 		};
 

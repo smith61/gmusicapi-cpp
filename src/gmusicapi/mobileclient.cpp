@@ -78,12 +78,21 @@ vector< Song > MobileClient::get_all_songs( ) {
 }
 
 
-Generator< TrackGenerator > MobileClient::get_all_tracks( unsigned int page_size ) {
-	return Generator< TrackGenerator >( this->sjClient, page_size );
+TrackIterator MobileClient::get_all_tracks( unsigned int page_size ) {
+	return TrackIterator( this->sjClient, page_size );
 }
 
-vector< unsigned char > MobileClient::get_song_bytes( const string_t& song_id ) {
-	return GetSongBytesCall( song_id ).make_call( this->androidClient ).get( );
+pplx::task< cibytestream > MobileClient::get_song_stream( const string_t& song_id ) {
+	return GetSongStreamCall( song_id ).make_call( this->androidClient );
+}
+
+pplx::task< vector< uint8_t > > MobileClient::get_song_bytes( const string_t& song_id ) {
+	return this->get_song_stream( song_id ).then( [ ]( cibytestream& is ) {
+		cbytebuf buffer;
+		is.read_to_end( buffer ).wait( );
+
+		return buffer.collection( );
+	} );
 }
 
 json::value MobileClient::get_registered_devices( ) {
