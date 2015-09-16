@@ -184,3 +184,16 @@ void GetSongBytesCall::get_query_params( map< string_t, string_t >& query_params
 vector< unsigned char > GetSongBytesCall::parse_response( const http_response& res ) {
 	return res.extract_vector( ).get( );
 }
+
+method GetDeviceInfoCall::method( ) {
+	return methods::GET;
+}
+
+string_t GetDeviceInfoCall::get_endpoint( ) {
+	static const string_t endpoint = U( "devicemanagementinfo" );
+	return endpoint;
+}
+
+json::value GetDeviceInfoCall::parse_response( const http_response& res ) {
+	return res.extract_json( ).get( );
+}

@@ -2,6 +2,8 @@
 #ifndef _MC_CALLS_H_
 #define _MC_CALLS_H_
 
+#include <vector>
+
 #include "gmusicapi/protocol/call.hpp"
 #include "gmusicapi/types.h"
 
@@ -79,6 +81,15 @@ namespace gmusicapi {
 
 		};
 
+		class GetDeviceInfoCall : public Call< GetDeviceInfoCall > {
+		public:
+
+			web::http::method method( );
+			utility::string_t get_endpoint( );
+
+			web::json::value parse_response( const web::http::http_response& res );
+
+		};
 	}
 }
 

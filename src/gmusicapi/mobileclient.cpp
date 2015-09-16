@@ -67,18 +67,14 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 }
 
 vector< Song > MobileClient::get_all_songs( ) {
-	vector< Song > ret;
-	json::value val = ListTracksCall( 10000 ).make_call( this->sjClient ).get( );
-	val = val.at( U( "data" ) ).at( U( "items" ) );
+	vector< Song > res;
 
-	if( val.is_array( ) ) {
-		json::array songs = val.as_array( );
-		for( const auto& song : songs ) {
-			ret.push_back( Song( song ) );
-		}
+	Generator< TrackGenerator > gen = this->get_all_tracks( );
+	while( gen ) {
+		res.push_back( *gen++ );
 	}
 
-	return ret;
+	return res;
 }
 
 
@@ -88,4 +84,8 @@ Generator< TrackGenerator > MobileClient::get_all_tracks( unsigned int page_size
 
 vector< unsigned char > MobileClient::get_song_bytes( const string_t& song_id ) {
 	return GetSongBytesCall( song_id ).make_call( this->androidClient ).get( );
+}
+
+json::value MobileClient::get_registered_devices( ) {
+	return GetDeviceInfoCall( ).make_call( this->sjClient ).get( );
 }

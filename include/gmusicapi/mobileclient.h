@@ -63,6 +63,8 @@ namespace gmusicapi {
 
 		std::vector< unsigned char > get_song_bytes( const string_t& song_id );
 
+		web::json::value get_registered_devices( );
+
 	};
 
 }
