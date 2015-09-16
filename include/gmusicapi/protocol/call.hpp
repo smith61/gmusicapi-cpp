@@ -72,6 +72,26 @@ namespace gmusicapi {
 
 		};
 
+		template< typename CALL_TYPE >
+		class GetCall : public Call< CALL_TYPE > {
+		public:
+
+			web::http::method method( ) {
+				return web::http::methods::GET;
+			}
+
+		};
+
+		template< typename CALL_TYPE >
+		class PostCall : public Call< CALL_TYPE > {
+		public:
+
+			web::http::method method( ) {
+				return web::http::methods::POST;
+			}
+
+		};
+
 	}
 }
 

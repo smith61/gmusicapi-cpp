@@ -33,10 +33,6 @@ static map< string_t, string_t > parse_key_value( const http_response& res ) {
 LoginCall::LoginCall( const string_t& email, const string_t& password, const string_t& androidID ) 
 	: email( email ), password( password ), androidID( androidID ) { }
 
-method LoginCall::method( ) {
-	return methods::POST;
-}
-
 string_t LoginCall::get_endpoint( ) {
 	static const string_t endpoint = U( "auth" );
 	return endpoint;
@@ -69,10 +65,6 @@ map< string_t, string_t > LoginCall::parse_response( const http_response& res ) 
 
 OAuthCall::OAuthCall( const string_t& masterToken, const string_t& androidID )
 	: masterToken( masterToken ), androidID( androidID ) { }
-
-method OAuthCall::method( ) {
-	return methods::POST;
-}
 
 string_t OAuthCall::get_endpoint( ) {
 	static const string_t endpoint = U( "auth" );
@@ -107,10 +99,6 @@ map< string_t, string_t > OAuthCall::parse_response( const http_response& res ) 
 ListTracksCall::ListTracksCall( size_t max_results, const string_t& page_token )
 	: max_results( max_results ), page_token( page_token ) { }
 
-method ListTracksCall::method( ) {
-	return methods::POST;
-}
-
 string_t ListTracksCall::get_endpoint( ) {
 	const string_t endpoint = U( "trackfeed" );
 	return endpoint;
@@ -133,10 +121,6 @@ json::value ListTracksCall::parse_response( const http_response& res ) {
 
 GetSongBytesCall::GetSongBytesCall( const string_t& song_id )
 	: song_id( song_id ) { }
-
-method GetSongBytesCall::method( ) {
-	return methods::GET;
-}
 
 string_t GetSongBytesCall::get_endpoint( ) {
 	static const string_t endpoint = U( "music/mplay" );
@@ -183,10 +167,6 @@ void GetSongBytesCall::get_query_params( map< string_t, string_t >& query_params
 
 vector< unsigned char > GetSongBytesCall::parse_response( const http_response& res ) {
 	return res.extract_vector( ).get( );
-}
-
-method GetDeviceInfoCall::method( ) {
-	return methods::GET;
 }
 
 string_t GetDeviceInfoCall::get_endpoint( ) {

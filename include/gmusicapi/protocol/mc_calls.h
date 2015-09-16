@@ -10,7 +10,7 @@
 namespace gmusicapi {
 	namespace protocol {
 		
-		class LoginCall : public Call< LoginCall > {
+		class LoginCall : public PostCall< LoginCall > {
 		private:
 
 			const string_t email;
@@ -21,7 +21,6 @@ namespace gmusicapi {
 
 			LoginCall( const string_t& email, const string_t& password, const string_t& androidID );
 
-			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			void set_body( web::http::http_request& req );
@@ -29,7 +28,7 @@ namespace gmusicapi {
 
 		};
 
-		class OAuthCall : public Call< OAuthCall > {
+		class OAuthCall : public PostCall< OAuthCall > {
 		private:
 
 			const string_t masterToken;
@@ -39,14 +38,13 @@ namespace gmusicapi {
 
 			OAuthCall( const string_t& masterToken, const string_t& androidID );
 
-			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			void set_body( web::http::http_request& req );
 			std::map< string_t, string_t > parse_response( const web::http::http_response& res );
 		};
 
-		class ListTracksCall : public Call< ListTracksCall > {
+		class ListTracksCall : public PostCall< ListTracksCall > {
 		private:
 
 			size_t max_results;
@@ -56,7 +54,6 @@ namespace gmusicapi {
 
 			ListTracksCall( size_t max_results, const string_t& page_token = U( "" ) );
 
-			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			void set_body( web::http::http_request& req );
@@ -64,7 +61,7 @@ namespace gmusicapi {
 
 		};
 
-		class GetSongBytesCall : public Call< GetSongBytesCall > {
+		class GetSongBytesCall : public GetCall< GetSongBytesCall > {
 		private:
 
 			const string_t& song_id;
@@ -73,7 +70,6 @@ namespace gmusicapi {
 
 			GetSongBytesCall( const string_t& song_id );
 
-			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			void get_query_params( std::map< string_t, string_t >& query_params );
@@ -81,10 +77,9 @@ namespace gmusicapi {
 
 		};
 
-		class GetDeviceInfoCall : public Call< GetDeviceInfoCall > {
+		class GetDeviceInfoCall : public GetCall< GetDeviceInfoCall > {
 		public:
 
-			web::http::method method( );
 			utility::string_t get_endpoint( );
 
 			web::json::value parse_response( const web::http::http_response& res );
