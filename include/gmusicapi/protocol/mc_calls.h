@@ -48,7 +48,7 @@ namespace gmusicapi {
 		private:
 
 			size_t max_results;
-			const string_t& page_token;
+			const string_t page_token;
 
 		public:
 
@@ -64,7 +64,7 @@ namespace gmusicapi {
 		class GetSongStreamCall : public GetCall< GetSongStreamCall > {
 		private:
 
-			const string_t& song_id;
+			const string_t song_id;
 
 		public:
 
