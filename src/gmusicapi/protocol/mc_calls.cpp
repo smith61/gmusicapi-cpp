@@ -1,5 +1,6 @@
 #include "gmusicapi/protocol/mc_calls.h"
 #include "gmusicapi/b64.h"
+#include "gmusicapi/google.h"
 
 #include "cpprest/json.h"
 #include "cpprest/interopstream.h"
@@ -55,7 +56,7 @@ void LoginCall::set_body( http_request& req ) {
 	ss << "&lang=en";
 	ss << "&sdk_version=17";
 	ss << "&Email=" << this->email;
-	ss << "&Passwd=" << this->password;
+	ss << "&EncryptedPasswd=" << gpsoauth_signature( this->email, this->password );
 	ss << "&androidId=" << this->androidID;
 	
 	req.set_body( ss.str( ), content_type );
