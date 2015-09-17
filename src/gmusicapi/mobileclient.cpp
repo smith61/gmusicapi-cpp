@@ -21,6 +21,13 @@ MobileClient::MobileClient( )
 	: isAuthenticated( false ),
 	  sjClient( U( "https://www.googleapis.com/sj/v1.11" ) ),
 	  androidClient( U( "https://android.clients.google.com/" ) )  {
+	auto useragent_handler = [ ]( http_request request, std::shared_ptr< http_pipeline_stage >& handler ) {
+		request.headers( ).add( U( "User-Agent" ), U( "gmusicapi-cpp/mobileclient" ) );
+
+		return handler->propagate( request );
+	};
+	sjClient.add_handler( useragent_handler );
+	androidClient.add_handler( useragent_handler );
 }
 
 bool MobileClient::login( const string_t& email, const string_t& password, const string_t& androidID ) {
