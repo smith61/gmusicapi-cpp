@@ -28,17 +28,16 @@ bool MobileClient::login( const string_t& email, const string_t& password, const
 		return false;
 	}
 
-	http_client client( U( "https://android.clients.google.com/" ) );
 	map< string_t, string_t > res;
 
-	res = LoginCall( email, password, androidID ).make_call( client ).get( );
+	res = LoginCall( email, password, androidID ).make_call( this->androidClient ).get( );
 	auto itr = res.find( U( "Token" ) );
 	if( itr == res.end( ) ) {
 		return false;
 	}
 
 	
-	res = OAuthCall( itr->second, androidID ).make_call( client ).get( );
+	res = OAuthCall( itr->second, androidID ).make_call( this->androidClient ).get( );
 	itr = res.find( U( "Auth" ) );
 	if( itr == res.end( ) ) {
 		return false;
