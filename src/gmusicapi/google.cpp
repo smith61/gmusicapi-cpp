@@ -43,7 +43,14 @@ string_t gmusicapi::gpsoauth_signature( const string_t& email, const string_t& p
 	email_pass.push_back( 0 );
 	vector_append( email_pass, pass );
 	buf.resize( RSA_size( android_key_7_3_29 ) );
-	buf.resize( RSA_public_encrypt( email_pass.size( ), &email_pass[ 0 ], &buf[ 0 ], android_key_7_3_29, RSA_PKCS1_OAEP_PADDING ) );
+
+	int result = RSA_public_encrypt( email_pass.size( ), &email_pass[ 0 ], &buf[ 0 ], android_key_7_3_29, RSA_PKCS1_OAEP_PADDING );
+	if( result < 0 ) {
+		stringstream_t ss;
+		ss << "Error encrypting email/password: " << result;
+		throw ss.str( );
+	}
+	buf.resize( result );
 
 
 	vector_append( sig, buf );
